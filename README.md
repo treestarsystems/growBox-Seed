@@ -2,10 +2,8 @@
 Install script for all growBox projects
 
 PLEASE NOTE:
-This is meant to be ran on a newly installed system that does 
-
-not have things like git and other necessary tools. I suggest 
-
+This is meant to be ran on a newly installed system that does  
+not have things like git and other necessary tools. I suggest  
 wget or copy+paste the growBox-Install.sh script.
 
 Example of retrieval: For certificate issues use "--no-check-certificate"
