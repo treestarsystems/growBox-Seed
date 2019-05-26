@@ -59,3 +59,11 @@ typings/
 
 # next.js build output
 .next
+
+#Custom
+/trash
+*.swp
+*.save
+*.json
+hardcopy.0
+screenlog.0
