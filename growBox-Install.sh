@@ -16,6 +16,11 @@ gbInstallLog=growBox-Install.log
 
 #This takes the repo. Split it into and add its part to an array
 #Finally referencing the last item then chopping off from the . on
+
+function genrandom {
+	date +%s | sha256sum | base64 | head -c $1 ; echo
+}
+
 function do_parse_project {
 	array=()
 	IFS='/'
@@ -27,9 +32,16 @@ function do_parse_project {
 	echo "${array[-1]%.*}"
 }
 
+# gen_user_name <project>
+function gen_user_name {
+	strip_dash="${1##*-}"
+	tolower=$(sed -e 's/\(.*\)/\L\1/' <<< "gb$strip_dash$(genrandom 5)")
+	echo $tolower$random
+}
+
 function do_root {
-	echo "Installing Root system dependencies"
-	echo "Add Mongo and Node repos then apt update/upgrade"
+#	echo "Installing Root system dependencies"
+#	echo "Add Mongo and Node repos then apt update/upgrade"
 #	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 > ./gbInstallLog 2>&1
 #	echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list > ./gbInstallLog 2>&1
 #	curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash - > ./gbInstallLog 2>&1
@@ -38,9 +50,18 @@ function do_root {
 #	sudo apt install -y mongodb-org nodejs nmap whois rsync screen minicom git > ./$gbInstallLog 2>&1
 #	cd /opt
 #	git clone $gbRootRepo > ./$gbInstallLog-$project 2>&1
-#	project=$(do_parse_project $gbRootRepo)
+	project=$(do_parse_project $gbRootRepo)
 #	cd /opt/$project
 #	npm install
+
+	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
+	if [$user_name == ''] || [$password == '']
+		then
+			user_name=$(gen_user_name $project)
+			password=$(genrandom 20)
+	fi
+
+	echo $user_name $password
 }
 
 function do_stem {
