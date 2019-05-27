@@ -42,9 +42,10 @@ function gen_user_name {
 
 function do_system_dependencies {
 	echo "Installing system dependencies"
+	SKIP_WARNING=1 rpi-update
 	apt update
 #	apt -y upgrade
-#	 apt install -y nodejs nmap whois rsync screen git
+#	apt install -y nodejs nmap whois rsync screen git build-essential npm
 }
 
 function do_root {
@@ -53,9 +54,9 @@ function do_root {
 	echo "Add Mongo and Node repos then apt update/upgrade"
 	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
 	echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" |  tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-#	curl -sL https://deb.nodesource.com/setup_11.x |  -E bash -
+	curl -sL https://deb.nodesource.com/setup_11.x |  -E bash -
 	do_system_dependencies
-#	apt install -y mongodb-org
+	apt install -y mongodb-org
 	cd $gbSeedDir
 	git clone $gbRootRepo
 	cd $gbSeedDir/$project
