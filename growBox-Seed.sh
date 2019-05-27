@@ -4,8 +4,8 @@
 #Purpose - Initial system install script..
 #Inputs  - Take in predifined options from console.
 #Action  - Prep server/client by downloading the required
-#	  system binaries then clone repo and finally
-#	  setup the run setup script.
+#	   system binaries then clone repo and finally
+#	   setup the run setup script.
 #Status  - Developing / Incomplete.
 
 gbRootRepo='https://github.com/mjnshosting/growBox-Root.git'
@@ -13,6 +13,7 @@ gbStemRepo='https://github.com/mjnshosting/growBox-Stem.git'
 gbBranchRepo='https://github.com/mjnshosting/growBox-Branch.git'
 gbFlowerRepo='https://github.com/mjnshosting/growBox-Flower.git'
 gbSeedLog="growBox-Seed.log"
+gbSeedDir="/opt/trash"
 
 #This takes the repo. Split it into and add its part to an array
 #Finally referencing the last item then chopping off from the . on
@@ -41,24 +42,24 @@ function gen_user_name {
 
 function do_system_dependencies {
 	echo "Installing system dependencies"
-#	apt update
+	apt update
 #	apt -y upgrade
-#	sudo apt install -y nodejs nmap whois rsync screen git
+#	 apt install -y nodejs nmap whois rsync screen git
 }
 
 function do_root {
 	project=$(do_parse_project $gbRootRepo)
 	echo "Installing Root Role"
 	echo "Add Mongo and Node repos then apt update/upgrade"
-#	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-#	echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-#	curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
-#	do_system_dependencies
+	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+	echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" |  tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+#	curl -sL https://deb.nodesource.com/setup_11.x |  -E bash -
+	do_system_dependencies
 #	apt install -y mongodb-org
-#	cd /opt
-#	git clone $gbRootRepo
-#	cd /opt/$project
-#	npm install
+	cd $gbSeedDir
+	git clone $gbRootRepo
+	cd $gbSeedDir/$project
+	npm install
 
 	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
 	if ["$user_name" == ''] || ["$password" == '']
@@ -73,11 +74,11 @@ function do_root {
 function do_stem {
 	project=$(do_parse_project $gbStemRepo)
 	echo "Installing Stem Role"
-#	do_system_dependencies
-#	cd /opt
-#	git clone $gbStemRepo
-#	cd /opt/$project
-#	npm install
+	do_system_dependencies
+	cd $gbSeedDir
+	git clone $gbStemRepo
+	cd $gbSeedDir/$project
+	npm install
 	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
 	if ["$user_name" == ''] || ["$password" == '']
 		then
@@ -91,11 +92,11 @@ function do_stem {
 function do_branch {
 	project=$(do_parse_project $gbBranchRepo)
 	echo "Installing Branch Role"
-#	do_system_dependencies
-#	cd /opt
-#	git clone $gbBranchRepo
-#	cd /opt/$project
-#	npm install
+	do_system_dependencies
+	cd $gbSeedDir
+	git clone $gbBranchRepo
+	cd $gbSeedDir/$project
+	npm install
 	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
 	if ["$user_name" == ''] || ["$password" == '']
 		then
@@ -109,11 +110,11 @@ function do_branch {
 function do_flower {
 	project=$(do_parse_project $gbFlowerRepo)
 	echo "Installing Flower Role"
-#	do_system_dependencies
-#	cd /opt
-#	git clone $gbFlowerRepo
-#	cd /opt/$project
-#	npm install
+	do_system_dependencies
+	cd $gbSeedDir
+	git clone $gbFlowerRepo
+	cd $gbSeedDir/$project
+	npm install
 	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
 	if ["$user_name" == ''] || ["$password" == '']
 		then
@@ -126,16 +127,16 @@ function do_flower {
 
 function do_all {
 	echo "Installing All Roles"
-#	do_system_dependencies
+	do_system_dependencies
 	array=($gbRootRepo $gbStemRepo $gbBranchRepo $gbFlowerRepo)
 	for i in "${array[@]}";
         do
 		project=$(do_parse_project $i)
 		echo "Now cloninging $project"
-#		cd /opt
-#		git clone $i
-#		cd /opt/$project
-#		npm install
+		cd $gbSeedDir
+		git clone $i
+		cd $gbSeedDir/$project
+		npm install
         done
 	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
 	if ["$user_name" == ''] || ["$password" == '']
