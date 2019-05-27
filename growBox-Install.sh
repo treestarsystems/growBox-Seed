@@ -39,18 +39,24 @@ function gen_user_name {
 	echo $tolower$random
 }
 
+function do_system_dependencies {
+	echo "Installing system dependencies"
+#	apt update
+#	apt -y upgrade
+#	sudo apt install -y nodejs nmap whois rsync screen git
+}
+
 function do_root {
-#	echo "Installing Root system dependencies"
-#	echo "Add Mongo and Node repos then apt update/upgrade"
-#	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 > ./gbInstallLog 2>&1
-#	echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list > ./gbInstallLog 2>&1
-#	curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash - > ./gbInstallLog 2>&1
-#	apt update > ./$gbInstallLog-$project 2>&1
-#	apt -y upgrade > ./$gbInstallLog-$project 2>&1
-#	sudo apt install -y mongodb-org nodejs nmap whois rsync screen minicom git > ./$gbInstallLog 2>&1
-#	cd /opt
-#	git clone $gbRootRepo > ./$gbInstallLog-$project 2>&1
 	project=$(do_parse_project $gbRootRepo)
+	echo "Installing Root system dependencies"
+#	echo "Add Mongo and Node repos then apt update/upgrade"
+#	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+#	echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+#	curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+#	do_system_dependencies
+#	apt install -y mongodb-org
+#	cd /opt
+#	git clone $gbRootRepo
 #	cd /opt/$project
 #	npm install
 
@@ -60,63 +66,103 @@ function do_root {
 			user_name=$(gen_user_name $project)
 			password=$(genrandom 20)
 	fi
-
-	echo $user_name $password
+	echo Username: $user_name
+	echo Password: $password
 }
 
 function do_stem {
-	echo "Installing Root system dependencies"
 	project=$(do_parse_project $gbStemRepo)
-#	apt update > ./$gbInstallLog-$project 2>&1
-#	apt -y upgrade > ./$gbInstallLog-$project 2>&1
-#	sudo apt install -y mongodb-org nodejs nmap whois rsync screen minicom git > ./$gbInstallLog 2>&1
+	echo "Installing Root system dependencies"
+#	do_system_dependencies
 #	cd /opt
-#	git clone $gbStemRepo > ./$gbInstallLog-$project 2>&1
+#	git clone $gbStemRepo
 #	cd /opt/$project
 #	npm install
+	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
+	if [$user_name == ''] || [$password == '']
+		then
+			user_name=$(gen_user_name $project)
+			password=$(genrandom 20)
+	fi
+	echo Username: $user_name
+	echo Password: $password
 }
 
 function do_branch {
-	echo "Branch"
 	project=$(do_parse_project $gbBranchRepo)
-#	apt update > ./$gbInstallLog-$project 2>&1
-#	apt -y upgrade > ./$gbInstallLog-$project 2>&1
+	echo "Installing Branch Role"
+#	do_system_dependencies
 #	cd /opt
-#	git clone $gbBranchRepo > ./$gbInstallLog-$project 2>&1
+#	git clone $gbBranchRepo
 #	cd /opt/$project
 #	npm install
+	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
+	if [$user_name == ''] || [$password == '']
+		then
+			user_name=$(gen_user_name $project)
+			password=$(genrandom 20)
+	fi
+	echo Username: $user_name
+	echo Password: $password
 }
 
 function do_flower {
-	echo "Flower"
-	project=$(do_parse_folder $gbFlowerRepo)
-#	apt update > ./$gbInstallLog-$project 2>&1
-#	apt -y upgrade > ./$gbInstallLog-$project 2>&1
+	project=$(do_parse_project $gbFlowerRepo)
+	echo "Installing Flower Role"
+#	do_system_dependencies
 #	cd /opt
-#	git clone $gbFlowerRepo > ./$gbInstallLog-$project 2>&1
+#	git clone $gbFlowerRepo
 #	cd /opt/$project
 #	npm install
+	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
+	if [$user_name == ''] || [$password == '']
+		then
+			user_name=$(gen_user_name $project)
+			password=$(genrandom 20)
+	fi
+	echo Username: $user_name
+	echo Password: $password
 }
 
 function do_all {
-	echo "All"
+	echo "Installing All Roles"
+#	do_system_dependencies
 	array=($gbRootRepo $gbStemRepo $gbBranchRepo $gbFlowerRepo)
 	for i in "${array[@]}";
         do
 		project=$(do_parse_project $i)
-#		apt update > ./$gbInstallLog-all 2>&1
-#		apt -y upgrade > ./$gbInstallLog-all 2>&1
+		echo "Now cloninging $project"
 #		cd /opt
-#		git clone $i > ./$gbInstallLog-all 2>&1
+#		git clone $i
 #		cd /opt/$project
 #		npm install
         done
+	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
+	if [$user_name == ''] || [$password == '']
+		then
+			user_name=gb$(sed -e 's/\(.*\)/\L\1/' <<<$(genrandom 10))
+			password=$(genrandom 20)
+	fi
+	echo Username: $user_name
+	echo Password: $password
+}
 
+function do_user_create {
+
+	#If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
+	if [$user_name == ''] || [$password == '']
+		then
+			user_name=gb$(sed -e 's/\(.*\)/\L\1/' <<<$(genrandom 10))
+			password=$(genrandom 20)
+	fi
+	echo Username: $user_name
+	echo Password: $password
 }
 
 function do_help {
         echo "Help Menu"
         echo -e "\n\033[0;33msudo ./growBox-Install.sh -iu -ofsk\e[0m\n"
+        echo -e "\033[0;33m ** All logs are written to your user directory ** \e[0m \n"
         echo "Usage:"
         echo "  Primary Options:"
         echo "  -h: This Help Menu"
@@ -130,62 +176,33 @@ function do_help {
         echo "  -f <username> <password-for-user>: Install growBox-Flower role"
         echo "  -a <username> <password-for-user>: Install all growBox roles"
         echo ""
+        echo -e "\033[0;33m  ** If a username AND a password is not provided it will be generated for you. ** \e[0m \n"
         echo "Ex:"
         echo -e "\033[0;33msudo ./growBox-Install.sh -i -b growboxuser password\e[0m"
         echo " - Will install all the system and app dependencies for a Branch device."
         echo "   Requires that a username and password be entered."
         echo ""
         echo -e "\033[0;33msudo ./growBox-Install.sh -u growboxuser password\e[0m"
-        echo " - Will create a user named <username> <password-for-user>"
-        echo "   Requires that a username and password be entered."
+        echo " - Will create a user named <username> with password <password-for-user>"
+        echo -e "   Requires that a username and password be entered.\n"
 }
 
 function do_options {
 case $secondary in
 	-r )
-		do_root
+		do_root $user_name $password > ~/gbInstallLog-root 2>&1
 		;;
 	-s )
-		do_stem
+		do_stem $user_name $password > ~/gbInstallLog-stem 2>&1
 		;;
 	-b )
-		do_branch
+		do_branch $user_name $password > ~/gbInstallLog-branch 2>&1
 		;;
 	-f )
-		do_flower
+		do_flower $user_name $password > ~/gbInstallLog-flower 2>&1
 		;;
 	-a )
-		do_all
-		;;
-	"" )
-		echo -e "\033[0;31mRequires a Secondary Option\e[0m" 1>&2
-		echo "roku_controller.sh -h: For Help Menu"
-		exit 1
-		;;
-	* )
-		echo -e "\033[0;31mInvalid Secondary Option: $secondary \e[0m" 1>&2
-		echo "roku_controller.sh -h: For Help Menu"
-		exit 1
-		;;
-esac
-}
-
-function do_options {
-case $secondary in
-	-r )
-		do_root $user_name $password
-		;;
-	-s )
-		do_stem $user_name $password
-		;;
-	-b )
-		do_branch $user_name $password
-		;;
-	-f )
-		do_flower $user_name $password
-		;;
-	-a )
-		do_all $user_name $password
+		do_all $user_name $password > ~/gbInstallLog-all 2>&1
 		;;
 	"" )
 		echo -e "\033[0;31mRequires a Secondary Option\e[0m" 1>&2
@@ -220,7 +237,7 @@ case $primary in
 		secondary=$1; shift
 		user_name=$1
 		password=$2
-		do_options
+		do_user_create > ~/gbInstallLog-adduser 2>&1
 
 		shift $((OPTIND -1))
 		;;
