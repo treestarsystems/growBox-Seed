@@ -6,7 +6,7 @@
 #Action  - Prep server/client by downloading the required
 #	   system binaries then clone repo and finally
 #	   setup the run setup script.
-#Status  - Developing / Incomplete.
+#Status  - Requires final testing.
 
 #If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
 
@@ -59,8 +59,8 @@ function do_system_dependencies {
 	echo "Installing system dependencies"
 	SKIP_WARNING=1 rpi-update
 	apt update
-#	apt -y upgrade
-#	apt install -y nodejs nmap whois rsync screen git build-essential npm
+	apt -y upgrade
+	apt install -y nodejs nmap whois rsync screen git build-essential npm
 }
 
 function do_config_edit {
