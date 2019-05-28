@@ -6,7 +6,7 @@
 #Action  - Prep server/client by downloading the required
 #	   system binaries then clone repo and finally
 #	   setup the run setup script.
-#Status  - Requires final testing.
+#Status  - Requires final testing and gpio access test.
 
 #If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
 
