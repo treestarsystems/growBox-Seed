@@ -44,9 +44,13 @@ function gen_user_name {
 function do_user_create {
 	if ["$user_name" == ''] || ["$password" == '']
 		then
-			user_name=gb$(sed -e 's/\(.*\)/\L\1/' <<<$(genrandom 10))
+			user_name=gb$(sed -e 's/\(.*\)/\L\1/' <<<$(gen_user_name $project))
 			password=$(genrandom 20)
 	fi
+	#Add user to system
+	useradd -d $gbSeedDir/$project -s /bin/bash -U $user_name
+	echo -e "$password\n$password" | passwd $user_name
+	chown -R $user_name:$user_name $gbSeedDir/$project
 	echo Username: $user_name
 	echo Password: $password
 }
@@ -78,19 +82,7 @@ function do_root {
 	git clone $gbRootRepo
 	cd $gbSeedDir/$project
 	npm install
-	if ["$user_name" == ''] || ["$password" == '']
-		then
-			user_name=$(gen_user_name $project)
-			password=$(genrandom 20)
-	fi
-
-	#Add user to system
-	useradd -d $gbSeedDir/$project -s /bin/bash -U $user_name
-	echo -e "$password\n$password" | passwd $user_name
-	chown -R $user_name:$user_name $gbSeedDir/$project
-
-	echo Username: $user_name
-	echo Password: $password
+	do_user_create
 }
 
 function do_stem {
@@ -103,19 +95,7 @@ function do_stem {
 	git clone $gbStemRepo
 	cd $gbSeedDir/$project
 	npm install
-	if ["$user_name" == ''] || ["$password" == '']
-		then
-			user_name=$(gen_user_name $project)
-			password=$(genrandom 20)
-	fi
-
-	#Add user to system
-	useradd -d $gbSeedDir/$project -s /bin/bash -U $user_name
-	echo -e "$password\n$password" | passwd $user_name
-	chown -R $user_name:$user_name $gbSeedDir/$project
-
-	echo Username: $user_name
-	echo Password: $password
+	do_user_create
 }
 
 function do_branch {
@@ -128,44 +108,20 @@ function do_branch {
 	git clone $gbBranchRepo
 	cd $gbSeedDir/$project
 	npm install
-	if ["$user_name" == ''] || ["$password" == '']
-		then
-			user_name=$(gen_user_name $project)
-			password=$(genrandom 20)
-	fi
-
-	#Add user to system
-	useradd -d $gbSeedDir/$project -s /bin/bash -U $user_name
-	echo -e "$password\n$password" | passwd $user_name
-	chown -R $user_name:$user_name $gbSeedDir/$project
-
-	echo Username: $user_name
-	echo Password: $password
+	do_user_create
 }
 
 function do_flower {
 	project=$(do_parse_project $gbFlowerRepo)
 	echo "Installing Flower Role"
 	do_system_dependencies
-#	do_config_edit
+	do_config_edit
 	mkdir $gbSeedDir
 	cd $gbSeedDir
 	git clone $gbFlowerRepo
 	cd $gbSeedDir/$project
 	npm install
-	if ["$user_name" == ''] || ["$password" == '']
-		then
-			user_name=$(gen_user_name $project)
-			password=$(genrandom 20)
-	fi
-
-	#Add user to system
-	useradd -d $gbSeedDir/$project -s /bin/bash -U $user_name
-	echo -e "$password\n$password" | passwd $user_name
-	chown -R $user_name:$user_name $gbSeedDir/$project
-
-	echo Username: $user_name
-	echo Password: $password
+	do_user_create
 }
 
 function do_all {
@@ -186,6 +142,8 @@ function do_all {
 				do_config_edit
 		fi
         done
+
+	#This is a bit different than the other create user functions since a project isnt used.
 	if ["$user_name" == ''] || ["$password" == '']
 		then
 			user_name=gb$(sed -e 's/\(.*\)/\L\1/' <<<$(genrandom 10))
