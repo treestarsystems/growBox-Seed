@@ -12,6 +12,7 @@ wget or copy+paste the growBox-Seed.sh script.
 Example of retrieval:
 #####################
 For certificate issues use "wget --no-check-certificate"
+
 .. code-block:: bash
     :linenos:
 	wget https://raw.githubusercontent.com/mjnshosting/growBox-Seed/master/growBox-Seed.sh
@@ -21,6 +22,7 @@ For certificate issues use "wget --no-check-certificate"
 username and password are optional
 
 cURL may need to be installed when using minimal versions of an OS.
+
 .. code-block:: bash
     :linenos:
 	curl https://raw.githubusercontent.com/mjnshosting/growBox-Seed/master/growBox-Seed.sh -o growBox-Seed.sh
