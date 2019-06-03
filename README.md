@@ -9,14 +9,14 @@ wget or copy+paste the growBox-Seed.sh script.
 #### Example of retrieval:  
 **For certificate issues use "wget --no-check-certificate"**
 ```
-wget https://raw.githubusercontent.com/mjnshosting/growBox-Seed/master/growBox-Seed.sh
+wget https://raw.githubusercontent.com/treestarsystems/growBox-Seed/master/growBox-Seed.sh
 chmod +x growBox-Seed.sh
 sudo ./growBox-Seed.sh -i -b <username> <password-for-user>
 ** username and password are optional **
 ```
 cURL may need to be installed when using minimal versions of an OS.
 ```
-curl https://raw.githubusercontent.com/mjnshosting/growBox-Seed/master/growBox-Seed.sh -o growBox-Seed.sh
+curl https://raw.githubusercontent.com/treestarsystems/growBox-Seed/master/growBox-Seed.sh -o growBox-Seed.sh
 chmod +x growBox-Seed.sh
 sudo ./growBox-Seed.sh -i -b <username> <password-for-user>
 ** username and password are optional **
