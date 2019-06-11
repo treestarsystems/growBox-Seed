@@ -10,10 +10,10 @@
 
 #If username or password are blank then one is provided. Need something to catch errors. Although the log is the lazy way.
 
-gbRootRepo='https://github.com/mjnshosting/growBox-Root.git'
-gbStemRepo='https://github.com/mjnshosting/growBox-Stem.git'
-gbBranchRepo='https://github.com/mjnshosting/growBox-Branch.git'
-gbFlowerRepo='https://github.com/mjnshosting/growBox-Flower.git'
+gbRootRepo='https://github.com/treestarsystems/growBox-Root.git'
+gbStemRepo='https://github.com/treestarsystems/growBox-Stem.git'
+gbBranchRepo='https://github.com/treestarsystems/growBox-Branch.git'
+gbFlowerRepo='https://github.com/treestarsystems/growBox-Flower.git'
 gbSeedLog="growBox-Seed.log"
 
 #This takes the repo. Split it into and add its part to an array
@@ -60,7 +60,8 @@ function do_system_dependencies {
 	SKIP_WARNING=1 rpi-update
 	apt update
 	apt -y upgrade
-	apt install -y nodejs nmap whois rsync screen git build-essential npm
+	apt install -y nodejs nmap whois rsync screen git build-essential npm nano
+	npm install pm2 -g
 }
 
 function do_config_edit {
@@ -83,6 +84,7 @@ function do_root {
 	cd $gbSeedDir/$project
 	npm install
 	do_user_create
+	pm2 server/index.js
 }
 
 function do_stem {
@@ -96,6 +98,7 @@ function do_stem {
 	cd $gbSeedDir/$project
 	npm install
 	do_user_create
+	pm2 server/index.js
 }
 
 function do_branch {
@@ -109,6 +112,7 @@ function do_branch {
 	cd $gbSeedDir/$project
 	npm install
 	do_user_create
+	pm2 server/index.js
 }
 
 function do_flower {
@@ -122,6 +126,7 @@ function do_flower {
 	cd $gbSeedDir/$project
 	npm install
 	do_user_create
+	pm2 server/index.js
 }
 
 function do_all {
@@ -141,6 +146,7 @@ function do_all {
 			then
 				do_config_edit
 		fi
+		pm2 server/index.js
         done
 
 	#This is a bit different than the other create user functions since a project isnt used.
