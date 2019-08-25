@@ -14,6 +14,7 @@ gbRootRepo='https://github.com/treestarsystems/growBox-Root.git'
 gbStemRepo='https://github.com/treestarsystems/growBox-Stem.git'
 gbBranchRepo='https://github.com/treestarsystems/growBox-Branch.git'
 gbFlowerRepo='https://github.com/treestarsystems/growBox-Flower.git'
+gbPetalRepo='https://github.com/treestarsystems/growBox-Petal.git'
 gbSeedLog="growBox-Seed.log"
 
 #This takes the repo. Split it into and add its part to an array
@@ -69,6 +70,10 @@ function do_config_edit {
 	echo -e '\n#Temp Sensor Edit\ndtoverlay=w1-gpio\n\n#Disable Warning Overlays and allow turbo mode\navoid_warnings=2\n' >> /boot/config.txt
 }
 
+function do_pm2conf {
+	echo -e "" > /root/ecosystem.config.js
+}
+
 function do_root {
 	project=$(do_parse_project $gbRootRepo)
 	echo "Installing Root Role"
@@ -84,7 +89,9 @@ function do_root {
 	cd $gbSeedDir/$project
 	npm install
 	do_user_create
-	pm2 server/index.js
+	do_pm2conf
+	pm2 /root/ecosystem.config.js
+	pm2 startup
 }
 
 function do_stem {
@@ -98,7 +105,9 @@ function do_stem {
 	cd $gbSeedDir/$project
 	npm install
 	do_user_create
-	pm2 server/index.js
+	do_pm2conf
+	pm2 /root/ecosystem.config.js
+	pm2 startup
 }
 
 function do_branch {
@@ -112,7 +121,9 @@ function do_branch {
 	cd $gbSeedDir/$project
 	npm install
 	do_user_create
-	pm2 server/index.js
+	do_pm2conf
+	pm2 /root/ecosystem.config.js
+	pm2 startup
 }
 
 function do_flower {
@@ -126,7 +137,25 @@ function do_flower {
 	cd $gbSeedDir/$project
 	npm install
 	do_user_create
-	pm2 server/index.js
+	do_pm2conf
+	pm2 /root/ecosystem.config.js
+	pm2 startup
+}
+
+function do_petal {
+	project=$(do_parse_project $gbPetalRepo)
+	echo "Installing Petal Role"
+	do_system_dependencies
+	do_config_edit
+	mkdir $gbSeedDir
+	cd $gbSeedDir
+	git clone $gbPetalRepo
+	cd $gbSeedDir/$project
+	npm install
+	do_user_create
+	do_pm2conf
+	pm2 /root/ecosystem.config.js
+	pm2 startup
 }
 
 function do_all {
@@ -146,7 +175,7 @@ function do_all {
 			then
 				do_config_edit
 		fi
-		pm2 server/index.js
+		do_pm2conf
         done
 
 	#This is a bit different than the other create user functions since a project isnt used.
@@ -162,6 +191,8 @@ function do_all {
 
 	echo Username: $user_name
 	echo Password: $password
+	pm2 /root/ecosystem.config.js
+	pm2 startup
 }
 
 function do_help {
@@ -179,6 +210,7 @@ function do_help {
         echo "  -s <username> <password-for-user>: Install growBox-Stem role"
         echo "  -b <username> <password-for-user>: Install growBox-Branch role"
         echo "  -f <username> <password-for-user>: Install growBox-Flower role"
+        echo "  -p <username> <password-for-user>: Install growBox-Petal role"
         echo "  -a <username> <password-for-user>: Install all growBox roles"
         echo ""
         echo -e "\033[0;33m  ** If a username AND a password is not provided it will be generated for you. ** \e[0m \n"
@@ -209,6 +241,10 @@ case $secondary in
 	-f )
 		echo -e "\n Install directory: $gbSeedDir \n Log file location: ~/$gbSeedLog-flower\n\n **Check log file for credentials** \n PLEASE DELETE WHEN DONE!!!\n rm ~/$gbSeedLog-flower\n"
 		do_flower $user_name $password > ~/$gbSeedLog-flower 2>&1
+ 		;;
+	-p )
+		echo -e "\n Install directory: $gbSeedDir \n Log file location: ~/$gbSeedLog-petal\n\n **Check log file for credentials** \n PLEASE DELETE WHEN DONE!!!\n rm ~/$gbSeedLog-petal\n"
+		do_petal $user_name $password > ~/$gbSeedLog-flower 2>&1
  		;;
 	-a )
 		echo -e "\n Install directory: $gbSeedDir \n Log file location: ~/$gbSeedLog-all\n\n **Check log file for credentials** \n PLEASE DELETE WHEN DONE!!!\n rm ~/$gbSeedLog-all\n"
