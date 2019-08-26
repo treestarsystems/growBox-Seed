@@ -49,12 +49,23 @@ function do_user_create {
 			user_name=$(sed -e 's/\(.*\)/\L\1/' <<<$(gen_user_name $project))
 			password=$(genrandom 20)
 	fi
-	#Add user to system
-	useradd -d $gbSeedDir/$project -s /bin/bash -U $user_name
-	echo -e "$password\n$password" | passwd $user_name
-	chown -R $user_name:$user_name $gbSeedDir/$project
-	echo Username: $user_name
-	echo Password: $password
+
+	if [ ! -z "$gbSeedDir" ]
+		then
+			#Add user to system
+			useradd -d $gbSeedDir/$project -s /bin/bash -U $user_name
+			#Own install directory
+			chown -R $user_name:$user_name $gbSeedDir/$project
+			echo $gbSeedDir
+			echo -e "$password\n$password" | passwd $user_name
+			echo Username: $user_name
+			echo Password: $password
+		else
+			useradd -m -d /home/$user_name -s /bin/bash -U $user_name
+			echo -e "$password\n$password" | passwd $user_name
+			echo Username: $user_name
+			echo Password: $password
+	fi
 }
 
 function do_user_create_only {
@@ -323,7 +334,6 @@ case $secondary in
 esac
 }
 
-
 primary=$1; shift
 case $primary in
 	-h )
@@ -350,7 +360,8 @@ case $primary in
 		secondary=$1; shift
 		user_name=$1
 		password=$2
-		do_user_create_only $user_name $password > ~/$gbSeedLog-adduser 2>&1
+#		do_user_create_only $user_name $password > ~/$gbSeedLog-adduser 2>&1
+		do_user_create $user_name $password > ~/$gbSeedLog-adduser 2>&1
 
 		shift $((OPTIND -1))
 		;;
