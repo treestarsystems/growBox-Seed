@@ -54,6 +54,8 @@ function do_user_create {
 		then
 			#Add user to system
 			useradd -d $gbSeedDir/$project -s /bin/bash -U $user_name
+			#Doing this without an empty $gbSeedDir and $project will return /
+			#This of course is destructive. Well thats why you use VMs for development!
 			#Own install directory
 			chown -R $user_name:$user_name $gbSeedDir/$project
 			echo $gbSeedDir
