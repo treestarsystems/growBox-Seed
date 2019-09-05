@@ -68,6 +68,17 @@ function do_user_create {
 			echo Username: $user_name
 			echo Password: $password
 	fi
+
+	#String converted to lower case for normalization
+	identify_pi=$(uname -m |  tr '[:upper:]' '[:lower:]')
+
+	#This relies on the assumption that RPis use ARM processors that are identified by "uanme -m"
+	if [[ $identify_pi == *"arm"* ]]
+		then
+			do_gpio_permissions
+		else
+			echo "This is not a RPi. Skipping GPIO permission changes"
+	fi
 }
 
 function do_user_create_only {
@@ -123,6 +134,10 @@ function do_pm2conf {
 	echo -e "" > /root/ecosystem.config.js
 }
 
+function do_gpio_permissions {
+	echo "Adding GPIO permissions"
+}
+
 function do_root {
 	project=$(do_parse_project $gbRootRepo)
 	echo "Installing Root Role"
@@ -142,6 +157,7 @@ function do_root {
 #	do_pm2conf
 #	pm2 /root/ecosystem.config.js
 #	pm2 startup
+	cd $gbSeedDir/$project
 }
 
 function do_stem {
@@ -317,7 +333,7 @@ case $secondary in
  		;;
 	-p )
 		echo -e "\n Install directory: $gbSeedDir \n Log file location: ~/$gbSeedLog-petal\n\n **Check log file for credentials** \n PLEASE DELETE WHEN DONE!!!\n rm ~/$gbSeedLog-petal\n"
-		do_petal $user_name $password > ~/$gbSeedLog-flower 2>&1
+		do_petal $user_name $password > ~/$gbSeedLog-petal 2>&1
  		;;
 	-a )
 		echo -e "\n Install directory: $gbSeedDir \n Log file location: ~/$gbSeedLog-all\n\n **Check log file for credentials** \n PLEASE DELETE WHEN DONE!!!\n rm ~/$gbSeedLog-all\n"
@@ -344,32 +360,39 @@ case $primary in
 		;;
 
 	-i )
-		gbSeedDir=$1; shift
+		gbSeedDir=$1
+		if [ ! -e "$gbSeedDir" ]
+			then
+				gbSeedDir=/opt
+			else
+				shift
+		fi
 		secondary=$1; shift
-		user_name=$1
-		password=$2
-		if [ "${secondary}" ]
+		if [ "$secondary" ]
 			then
 				do_options
 		else
 			echo -e "\033[0;31mPlease enter a valid Secondary Option\e[0m"
 			exit 1
 		fi
+		user_name=$1
+		password=$2
 
 		shift $((OPTIND -1))
 		;;
+
 	-u )
-		secondary=$1; shift
 		user_name=$1
 		password=$2
-#		do_user_create_only $user_name $password > ~/$gbSeedLog-adduser 2>&1
+		echo -e "\n Log file location: ~/$gbSeedLog-adduser\n\n **Check log file for credentials** \n PLEASE DELETE WHEN DONE!!!\n rm ~/$gbSeedLog-adduser\n"
 		do_user_create $user_name $password > ~/$gbSeedLog-adduser 2>&1
 
 		shift $((OPTIND -1))
 		;;
+
 	* )
-		echo -e "\033[0;31mInvalid Primary Option: $secondary \e[0m" 1>&2
-		echo -e "\033[0;33msudo ./growBox-Seed.sh -h: For Help Menu\e[0m"
+		echo -e "\033[0;31m Invalid Primary Option: $primary \e[0m" 1>&2
+		echo -e "\033[0;33m sudo ./growBox-Seed.sh -h: For Help Menu\e[0m"
 		exit 1
 		;;
 esac
