@@ -44,6 +44,7 @@ function gen_user_name {
 }
 
 function do_user_create {
+	user_shell='/bin/bash'
 	if ["$user_name" == ''] || ["$password" == '']
 		then
 			user_name=$(sed -e 's/\(.*\)/\L\1/' <<<$(gen_user_name $project))
@@ -52,18 +53,19 @@ function do_user_create {
 
 	if [ ! -z "$gbSeedDir" ]
 		then
+			home_dir="$gbSeedDir/$project"
 			#Add user to system
-			useradd -d $gbSeedDir/$project -s /bin/bash -U $user_name
+			useradd -d $home_dir -s $user_shell -U $user_name
 			#Doing this without an empty $gbSeedDir and $project will return /
 			#This of course is destructive. Well thats why you use VMs for development!
 			#Own install directory
 			chown -R $user_name:$user_name $gbSeedDir/$project
-			echo $gbSeedDir
 			echo -e "$password\n$password" | passwd $user_name
 			echo Username: $user_name
 			echo Password: $password
 		else
-			useradd -m -d /home/$user_name -s /bin/bash -U $user_name
+			home_dir="/home/$user_name"
+			useradd -m -d $home_dir -s $user_shell -U $user_name
 			echo -e "$password\n$password" | passwd $user_name
 			echo Username: $user_name
 			echo Password: $password
@@ -79,19 +81,14 @@ function do_user_create {
 		else
 			echo "This is not a RPi. Skipping GPIO permission changes"
 	fi
-}
 
-function do_user_create_only {
-	if ["$user_name" == ''] || ["$password" == '']
+	#Write user data in JSON format.
+	if [ ! -z "$gbSeedDir" ]
 		then
-			user_name=$(sed -e 's/\(.*\)/\L\1/' <<<$(gen_user_name $project))
-			password=$(genrandom 20)
+			echo "{\"username\":\"$user_name\",\"homedir\":\"$home_dir\",\"shell\":\"$user_shell\"}" > $home_dir/system_confs/system_user.json
+		else
+			echo "{\"username\":\"$user_name\",\"homedir\":\"$home_dir\",\"shell\":\"$user_shell\"}" > $home_dir/system_user.json
 	fi
-	#Add user to system
-	useradd -s /bin/bash -U $user_name
-	echo -e "$password\n$password" | passwd $user_name
-	echo Username: $user_name
-	echo Password: $password
 }
 
 function do_system_dependencies {
@@ -268,6 +265,7 @@ function do_all {
 			user_name=gb$(sed -e 's/\(.*\)/\L\1/' <<<$(genrandom 10))
 			password=$(genrandom 20)
 	fi
+
 	#Add user to system
 	useradd -d $gbSeedDir/$project -s /bin/bash -U $user_name
 	echo -e "$password\n$password" | passwd $user_name
